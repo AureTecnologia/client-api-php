@@ -114,10 +114,17 @@ class AureClientAPI {
 
 			$URLParts = parse_url( $url );
 
-			$fp = fsockopen( $URLParts['host'], isset( $URLParts['port'] ) ? $URLParts['port'] : 80, $errno, $errstr,
-				30 );
+			if(extension_loaded('openssl')){
 
-			$data = http_build_query( $data );
+				$fp = fsockopen( 'ssl://' . $URLParts['host'], 443, $errno, $errstr, 30 );
+
+			} else {
+
+				$fp = fsockopen( $URLParts['host'], isset( $URLParts['port'] ) ? $URLParts['port'] : 80, $errno, $errstr,
+					30 );
+			}
+
+			$data = json_encode( $data );
 
 			$out = $method . " " . $URLParts['path'] . " HTTP/1.1\r\n";
 			$out .= "Host: " . $URLParts['host'] . "\r\n";
